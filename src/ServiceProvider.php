@@ -4,6 +4,7 @@ namespace Addons\Plugins;
 
 use Illuminate\Support\Str;
 use Symfony\Component\Finder\Finder;
+use Illuminate\Filesystem\Filesystem;
 use Addons\Plugins\Events\EventDispatcher;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
@@ -18,6 +19,11 @@ class ServiceProvider extends BaseServiceProvider
 	{
 		$this->mergeConfigFrom(__DIR__ . '/../config/plugins.php', 'plugins');
 
+		$this->app->bind(\Illuminate\Foundation\PackageManifest::class, function($app) {
+			return new \Illuminate\Foundation\PackageManifest(
+				new Filesystem, realpath(__DIR__.'/../../../../'), $this->app->getCachedPackagesPath()
+			);
+		});
 		$this->registerPlugins();
 	}
 
@@ -99,13 +105,14 @@ class ServiceProvider extends BaseServiceProvider
 	private function bootPlugins()
 	{
 		$loader = require __DIR__.'/../../../autoload.php';
+		$router = $this->app['router'];
 		$censor = $this->app->has('censor') ? $this->app['censor'] : null;
 		$plugins = config('plugins.plugins');
 
 		foreach($plugins as $name => $config)
 		{
 			// 发布config文件
-			foreach (!empty($config['register']['config']) ? $config['config'] : [] as $file)
+			foreach (!empty($config['register']['config']) ? $config['configs'] : [] as $file)
 				$this->publishes([$config['path'].'config/'.$file.'.php' => config_path($file.'.php')], 'config');
 			//加载
 			!empty($config['register']['view']) && $this->loadViewsFrom(realpath($config['path'].'resources/views/'), $name);
