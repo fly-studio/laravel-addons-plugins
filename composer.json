@@ -1,8 +1,8 @@
 {
     "name": "addons/plugins",
     "description": "Laravel's plugins.",
-    "homepage": "https://www.load-page.com/manuals",
-    "keywords": ["L5", "Laravel 5", "Laravel","Addons"],
+    "homepage": "https://www.load-page.com/",
+    "keywords": ["Laravel","Plugins"],
     "license": "MIT",
     "support": {
         "issues": "https://github.com/fly-studio/laravel-addons-plugins/issues",
